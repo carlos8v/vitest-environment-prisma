@@ -17,48 +17,64 @@ export default <Environment>{
   name: 'prisma',
   async setup(global, options = {}) {
     const {
+      adapter = 'mysql',
       envFile = '.env.test',
-      databaseName = 'prisma',
-      databaseSchema = 'default',
-      randomSchema = false,
-      adapter = 'mysql'
+      schemaPrefix = ''
     } = options as PrismaEnvironmentOptions
 
     if (!Object.keys(supportedAdapters).includes(adapter)) {
       throw new Error('Unsupported database adapter value.\n\nSee supported adapters in https://github.com/carlos8v/vitest-environment-prisma#adapters.')
     }
 
+    const dangerousEnvFiles = ['.env', '.env.production']
+    if (dangerousEnvFiles.includes(envFile)) {
+      throw new Error(`For security reasons we do not allow the .env file to be: ${dangerousEnvFiles.join(', ')}.\n\nWe strongly advise you to use '.env.test'`)
+    }
+
     dotenv.config({ path: envFile })
-    const connectionString = process.env.DATABASE_URL
 
-    if (!connectionString) {
-      throw new Error('DATABASE_URL was not provided.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#connection-string')
+    const dbUser = process.env.DATABASE_USER
+    const dbPass = process.env.DATABASE_PASS
+    const dbHost = process.env.DATABASE_HOST
+    const dbPort = process.env.DATABASE_PORT
+    const dbName = process.env.DATABASE_NAME
+    let dbSchema = randomUUID()
+
+    if (adapter === 'mysql') {
+      dbSchema = dbSchema.replace(/-/g, '_')
     }
 
-    if (randomSchema && adapter === 'psql') {
-      const newDatabaseUrl = process.env.DATABASE_URL
-        .replace(/(schema=\w+&)|(schema=\w+$)/g, `schema=${randomUUID()}&`)
-        .replace(/&$/i, '')
+    if ([dbUser, dbPass, dbHost, dbPort, dbName].some((env) => !env || env === '')) {
+      const missingCredentials = ['`dbUser`', '`dbPass`', '`dbHost`', '`dbPort`', '`dbName`']
+        .filter((env) => !process.env[env] || process.env[env] === '')
 
-      process.env.DATABASE_URL = newDatabaseUrl
-      global.process.env.DATABASE_URL = newDatabaseUrl
-    }
-
-    const adapterOptions = {
-      connectionString,
-      databaseName,
-      databaseSchema
+      throw new Error(`${missingCredentials.join(', ')} credentials are missing.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#connection-string`)
     }
 
     const { [adapter]: selectedAdapter } = supportedAdapters
+    const connectionString = selectedAdapter.getConnectionString({
+      dbUser,
+      dbPass,
+      dbHost,
+      dbPort,
+      dbName: `${schemaPrefix}${dbName}`,
+      dbSchema
+    })
 
-    if (selectedAdapter?.setupDatabase)
-      await selectedAdapter.setupDatabase(adapterOptions)
+    process.env.DATABASE_URL = connectionString
+    global.process.env.DATABASE_URL = connectionString
+
+    const adapterOptions = {
+      connectionString,
+      databaseName: dbName,
+      databaseSchema: dbSchema
+    }
+
+    await selectedAdapter.setupDatabase(adapterOptions)
 
     return {
       async teardown() {
-        if (selectedAdapter?.teardownDatabase)
-          await selectedAdapter.teardownDatabase(adapterOptions)
+        await selectedAdapter.teardownDatabase(adapterOptions)
       }
     }
   }

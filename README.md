@@ -8,7 +8,7 @@ details.
 ### `Setup`
 Environment runs `prisma migrate deploy` in your application to bootstrap test database.
 
-**:warning: Be aware that this can update your `production` database if you are not carefull. Use this only on `development`.**
+**:warning: Be aware that this can update your `production` database if you are not carefull. Use this only on `development` and always check your .env credentials**
 
 ### `Teardown`
 Environment will drop your test database depending on your adapter
@@ -35,8 +35,7 @@ export default defineConfig({
     environment: 'prisma', // Required
     environmentOptions: {
       adapter: 'mysql',
-      envFile: '.env.test',
-      databaseName: 'mydb'
+      envFile: '.env.test'
     }
   }
 })
@@ -48,19 +47,19 @@ export default defineConfig({
 
 | Name | Description | Default |
 |:-----|:------------|:--------|
-| databaseName | Name of the database to drop on teardown | `prisma` |
-| databaseSchema | Name of the schema to drop on teardown | `public` |
-| randomSchema | Generate random UUID schema for test database | `false` |
 | adapter | Name database adapter. See [Adapters](#adapters) | `mysql` |
 | envFile | Name of the `.env` file for test suit | `.env.test` |
 
-## Connection String
+## Database Credentials
 
-It is necessary to have the key `DATABASE_URL` in your `.env` file. See [Prisma database connections](https://www.prisma.io/docs/concepts/database-connectors) for more.
+The following keys must be present on your `.env.test` file:
 
-Examples:
+| Name | Description | Example |
+|:-----|:------------|:--------|
+| `DATABASE_USER` | Database user credential | `root` |
+| `DATABASE_PASS` | Database user password credential | `root` |
+| `DATABASE_HOST` | Database connection host | `localhost`, `127.0.0.1` |
+| `DATABASE_PORT` | Database connection port | `5432`, `3306` |
+| `DATABASE_NAME` | Database name | `mydb` |
 
-| Adapter | Format |
-|:--------|:-------|
-| `mysql` | mysql://adalovelace:password@localhost:3306/mydb?connection_limit=5 |
-| `psql` | postgresql://adalovelace:password@localhost:5432/mydb |
+These credentials are necessary to make the `DATABASE_URL` env value to which the prisma connection will be made. See [Prisma database connections](https://www.prisma.io/docs/concepts/database-connectors) for more.

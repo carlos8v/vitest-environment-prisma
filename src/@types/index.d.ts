@@ -1,9 +1,16 @@
 export type PrismaEnvironmentOptions = {
   envFile: string
-  randomSchema: boolean
-  databaseName: string
-  databaseSchema: string
+  schemaPrefix: string
   adapter: 'mysql' | 'psql'
+}
+
+export type EnvironmentDatabaseCredentials = {
+  dbUser: string
+  dbPass: string
+  dbHost: string
+  dbPort: string
+  dbName: string
+  dbSchema: string
 }
 
 export type EnvironmentAdapterOptions = {
@@ -19,4 +26,5 @@ export type PsqlEnvironmentAdapterOptions = {
 export type MysqlEnvironmentAdapterOptions = {
   connectionString: string
   databaseName: string
+  databaseSchema: string
 }
