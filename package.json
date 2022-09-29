@@ -1,0 +1,32 @@
+{
+  "name": "vitest-environment-prisma",
+  "version": "0.1.0",
+  "description": "Vitest testing environment for prisma migrate and drop functions",
+  "files": [
+    "dist/src"
+  ],
+  "scripts": {
+    "clean": "rimraf lib/",
+    "build": "npm run clean && tsc -p tsconfig-build.json"
+  },
+  "main": "./dist/src/index.js",
+  "module": "./dist/src/index.js",
+  "types": ".dist/src/index.d.ts",
+  "keywords": [
+    "prisma",
+    "vitest",
+    "test"
+  ],
+  "author": "Carlos Souza <carlos.pessoal@hotmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.7.23",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.8.4"
+  },
+  "peerDependencies": {
+    "mysql2": "^2.2.5",
+    "pg": "^8.5.1",
+    "vitest": ">=0.23.0"
+  }
+}
