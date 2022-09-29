@@ -24,7 +24,7 @@ export default <Environment>{
       adapter = 'mysql'
     } = options as PrismaEnvironmentOptions
 
-    if (!Object.keys(adapter).includes(adapter)) {
+    if (!Object.keys(adapters).includes(adapter)) {
       console.error('Unsupported database adapter value')
       process.exit(1)
     }
