@@ -1,6 +1,6 @@
 {
   "name": "vitest-environment-prisma",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vitest testing environment for prisma migrate and teardown scripts",
   "files": [
     "dist/"
@@ -22,6 +22,10 @@
   ],
   "author": "Carlos Souza <carlos.pessoal@hotmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carlos8v/vitest-environment-prisma.git"
+  },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
     "@types/node": "^18.7.23",
