@@ -8,7 +8,7 @@ import { PrismaEnvironmentOptions } from './@types'
 import mysqlAdapter from './adapters/mysqlAdapter'
 import psqlAdapter from './adapters/psqlAdapter'
 
-const adapters = {
+const supportedAdapters = {
   mysql: mysqlAdapter,
   psql: psqlAdapter,
 }
@@ -24,17 +24,15 @@ export default <Environment>{
       adapter = 'mysql'
     } = options as PrismaEnvironmentOptions
 
-    if (!Object.keys(adapters).includes(adapter)) {
-      console.error('Unsupported database adapter value')
-      process.exit(1)
+    if (!Object.keys(supportedAdapters).includes(adapter)) {
+      throw new Error('Unsupported database adapter value.\n\nSee supported adapters in https://github.com/carlos8v/vitest-environment-prisma#adapters.')
     }
 
     dotenv.config({ path: envFile })
     const connectionString = process.env.DATABASE_URL
 
     if (!connectionString) {
-      console.error('DATABASE_URL was not provided')
-      process.exit(1)
+      throw new Error('DATABASE_URL was not provided.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#connection-string')
     }
 
     if (randomSchema && adapter === 'psql') {
@@ -52,12 +50,15 @@ export default <Environment>{
       databaseSchema
     }
 
-    const { setupDatabase, teardownDatabase } = adapters[adapter]
-    await setupDatabase(adapterOptions)
+    const { [adapter]: selectedAdapter } = supportedAdapters
+
+    if (selectedAdapter?.setupDatabase)
+      await selectedAdapter.setupDatabase(adapterOptions)
 
     return {
       async teardown() {
-        await teardownDatabase(adapterOptions)
+        if (selectedAdapter?.teardownDatabase)
+          await selectedAdapter.teardownDatabase(adapterOptions)
       }
     }
   }
