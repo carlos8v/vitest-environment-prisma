@@ -49,6 +49,7 @@ export default defineConfig({
 |:-----|:------------|:--------|
 | adapter | Name database adapter. See [Adapters](#adapters) | `mysql` |
 | envFile | Name of the `.env` file for test suit | `.env.test` |
+| schemaPrefix | Prefix to attach on the database name | |
 
 ## Database Credentials
 
