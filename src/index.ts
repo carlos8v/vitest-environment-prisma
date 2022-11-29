@@ -45,8 +45,13 @@ export default <Environment>{
     }
 
     if ([dbUser, dbPass, dbHost, dbPort, dbName].some((env) => !env || env === '')) {
-      const missingCredentials = ['`dbUser`', '`dbPass`', '`dbHost`', '`dbPort`', '`dbName`']
-        .filter((env) => !process.env[env] || process.env[env] === '')
+      const missingCredentials = [
+        '`DATABASE_USER`',
+        '`DATABASE_PASS`',
+        '`DATABASE_HOST`',
+        '`DATABASE_PORT`',
+        '`DATABASE_NAME`'
+      ].filter((env) => !process.env[env] || process.env[env] === '')
 
       throw new Error(`${missingCredentials.join(', ')} credentials are missing.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#connection-string`)
     }

@@ -1,6 +1,6 @@
 {
   "name": "vitest-environment-prisma",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Vitest testing environment for prisma migrate and teardown scripts",
   "files": [
     "dist/"
@@ -30,7 +30,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/node": "^18.7.23",
     "@types/pg": "^8.6.5",
-    "dotenv": "8.2.0",
+    "dotenv": "^16.0.3",
     "mysql2": "^2.3.3",
     "pg": "^8.8.0",
     "rimraf": "^3.0.2",
@@ -38,7 +38,7 @@
     "vitest": "^0.23.4"
   },
   "peerDependencies": {
-    "dotenv": "^8.2.0",
+    "dotenv": "^16.0.3",
     "mysql2": "^2.3.3",
     "pg": "^8.8.0",
     "prisma": ">=4.4.0",
