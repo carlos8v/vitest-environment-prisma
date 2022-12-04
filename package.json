@@ -27,7 +27,6 @@
     "url": "git+https://github.com/carlos8v/vitest-environment-prisma.git"
   },
   "devDependencies": {
-    "@types/dotenv": "^8.2.0",
     "@types/node": "^18.7.23",
     "@types/pg": "^8.6.5",
     "dotenv": "^16.0.3",
