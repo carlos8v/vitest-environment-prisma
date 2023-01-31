@@ -1,17 +1,10 @@
-import { randomUUID } from 'crypto'
-
 import * as dotenv from 'dotenv'
+import { randomUUID } from 'crypto'
 import { Environment } from 'vitest'
-
+import { prismaExecSync } from './lib'
 import { PrismaEnvironmentOptions } from './@types'
 
-import mysqlAdapter from './adapters/mysqlAdapter'
-import psqlAdapter from './adapters/psqlAdapter'
-
-const supportedAdapters = {
-  mysql: mysqlAdapter,
-  psql: psqlAdapter,
-}
+const supportedAdapters = ['mysql', 'psql', 'sqlite']
 
 export default <Environment>{
   name: 'prisma',
@@ -19,10 +12,12 @@ export default <Environment>{
     const {
       adapter = 'mysql',
       envFile = '.env.test',
-      schemaPrefix = ''
+      prismaEnvVarName = 'DATABASE_URL',
+      schemaPrefix = '',
+      sqlitePath = '/tmp'
     } = options as PrismaEnvironmentOptions
 
-    if (!Object.keys(supportedAdapters).includes(adapter)) {
+    if (!supportedAdapters.includes(adapter)) {
       throw new Error('Unsupported database adapter value.\n\nSee supported adapters in https://github.com/carlos8v/vitest-environment-prisma#adapters.')
     }
 
@@ -31,7 +26,9 @@ export default <Environment>{
       throw new Error(`For security reasons we do not allow the .env file to be: ${dangerousEnvFiles.join(', ')}.\n\nWe strongly advise you to use '.env.test'`)
     }
 
-    dotenv.config({ path: envFile })
+    if (envFile !== '') {
+      dotenv.config({ path: envFile, override: true })
+    }
 
     const dbUser = process.env.DATABASE_USER
     const dbPass = process.env.DATABASE_PASS
@@ -44,7 +41,7 @@ export default <Environment>{
       dbSchema = dbSchema.replace(/-/g, '_')
     }
 
-    if ([dbUser, dbPass, dbHost, dbPort, dbName].some((env) => !env || env === '')) {
+    if (adapter !== 'sqlite' && [dbUser, dbPass, dbHost, dbPort, dbName].some((env) => !env || env === '')) {
       const missingCredentials = [
         '`DATABASE_USER`',
         '`DATABASE_PASS`',
@@ -56,30 +53,24 @@ export default <Environment>{
       throw new Error(`${missingCredentials.join(', ')} credentials are missing.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#connection-string`)
     }
 
-    const { [adapter]: selectedAdapter } = supportedAdapters
-    const connectionString = selectedAdapter.getConnectionString({
-      dbUser,
-      dbPass,
-      dbHost,
-      dbPort,
-      dbName: `${schemaPrefix}${dbName}`,
-      dbSchema
-    })
+    let connectionString
 
-    process.env.DATABASE_URL = connectionString
-    global.process.env.DATABASE_URL = connectionString
-
-    const adapterOptions = {
-      connectionString,
-      databaseName: dbName,
-      databaseSchema: dbSchema
+    if (adapter === 'mysql') {
+      connectionString = `mysql://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${schemaPrefix}${dbName}_${dbSchema}`
+    } else if (adapter === 'psql') {
+      connectionString = `postgresql://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${schemaPrefix}${dbName}?schema=${dbSchema}`
+    } else if (adapter === 'sqlite') {
+      connectionString = `file:${sqlitePath}/${schemaPrefix}${dbSchema}.sqlite`
     }
 
-    await selectedAdapter.setupDatabase(adapterOptions)
+    process.env[prismaEnvVarName] = connectionString
+    global.process.env[prismaEnvVarName] = connectionString
+
+    await prismaExecSync('db push --skip-generate --force-reset')
 
     return {
       async teardown() {
-        await selectedAdapter.teardownDatabase(adapterOptions)
+        await prismaExecSync('migrate reset --skip-generate --force --skip-seed')
       }
     }
   }
