@@ -20,6 +20,7 @@ Environment will drop your test database depending on your adapter
 Databases supported by now:
 - `mysql`
 - `psql`
+- `sqlite`
 
 ## Setup Environment
 
@@ -64,3 +65,12 @@ The following keys must be present on your `.env.test` file:
 | `DATABASE_NAME` | Database name | `mydb` |
 
 These credentials are necessary to make the `DATABASE_URL` env value to which the prisma connection will be made. See [Prisma database connections](https://www.prisma.io/docs/concepts/database-connectors) for more.
+
+### Sqlite config
+
+If you are using the sqlite adapter only the `DATABASE_NAME` env is required.
+Make sure to use only the name: Ex:
+- `DATABASE_NAME=file:/mydb` :heavy_multiplication_x:
+- `DATABASE_NAME=mydb` :heavy_check_mark:
+- `DATABASE_NAME=mydb.db` :heavy_check_mark:
+- `DATABASE_NAME=../mydb` :heavy_check_mark:
