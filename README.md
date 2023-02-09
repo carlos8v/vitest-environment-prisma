@@ -36,7 +36,8 @@ export default defineConfig({
     environment: 'prisma', // Required
     environmentOptions: {
       adapter: 'mysql',
-      envFile: '.env.test'
+      envFile: '.env.test',
+      prismaEnvVarName: 'DATABASE_URL'  // Overrides the environment variable used for the Prisma DB connection URL
     }
   }
 })
@@ -46,31 +47,37 @@ export default defineConfig({
 
 ## Environment Options
 
-| Name | Description | Default |
-|:-----|:------------|:--------|
-| adapter | Name database adapter. See [Adapters](#adapters) | `mysql` |
-| envFile | Name of the `.env` file for test suit | `.env.test` |
-| schemaPrefix | Prefix to attach on the database name | |
+| Name             | Description                                                    | Default        |
+|:-----------------|:---------------------------------------------------------------|:---------------|
+| adapter          | Name database adapter. See [Adapters](#adapters)               | `mysql`        |
+| envFile          | Name of the `.env` file for test suit                          | `.env.test`    |
+| schemaPrefix     | Prefix to attach on the database name                          |                |
+| prismaEnvVarName | The environment variable used for the Prisma DB connection URL | `DATABASE_URL` |
 
 ## Database Credentials
 
 The following keys must be present on your `.env.test` file:
 
-| Name | Description | Example |
-|:-----|:------------|:--------|
-| `DATABASE_USER` | Database user credential | `root` |
-| `DATABASE_PASS` | Database user password credential | `root` |
-| `DATABASE_HOST` | Database connection host | `localhost`, `127.0.0.1` |
-| `DATABASE_PORT` | Database connection port | `5432`, `3306` |
-| `DATABASE_NAME` | Database name | `mydb` |
+| Name            | Description                       | Example                  |
+|:----------------|:----------------------------------|:-------------------------|
+| `DATABASE_USER` | Database user credential          | `root`                   |
+| `DATABASE_PASS` | Database user password credential | `root`                   |
+| `DATABASE_HOST` | Database connection host          | `localhost`, `127.0.0.1` |
+| `DATABASE_PORT` | Database connection port          | `5432`, `3306`           |
+| `DATABASE_NAME` | Database name                     | `mydb`                   |
 
-These credentials are necessary to make the `DATABASE_URL` env value to which the prisma connection will be made. See [Prisma database connections](https://www.prisma.io/docs/concepts/database-connectors) for more.
+These credentials are necessary to construct the `DATABASE_URL` env value (can be overridden, see above) to which the 
+prisma connection will be made. 
+See the [Prisma database connections](https://www.prisma.io/docs/reference/database-reference/connection-urls#env) for 
+more information on how to properly set the connection URL from an environment variable.
 
 ### Sqlite config
 
 If you are using the sqlite adapter only the `DATABASE_NAME` env is required.
-Make sure to use only the name: Ex:
-- `DATABASE_NAME=file:/mydb` :heavy_multiplication_x:
+
+Make sure to use only the name: 
+
 - `DATABASE_NAME=mydb` :heavy_check_mark:
-- `DATABASE_NAME=mydb.db` :heavy_check_mark:
-- `DATABASE_NAME=../mydb` :heavy_check_mark:
+- `DATABASE_NAME=file:/mydb` :heavy_multiplication_x:
+- `DATABASE_NAME=mydb.db` :heavy_multiplication_x:
+- `DATABASE_NAME=../mydb` :heavy_multiplication_x:

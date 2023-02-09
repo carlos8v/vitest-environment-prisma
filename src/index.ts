@@ -21,7 +21,8 @@ export default <Environment>{
     const {
       adapter = 'mysql',
       envFile = '.env.test',
-      schemaPrefix = ''
+      schemaPrefix = '',
+      prismaEnvVarName = 'DATABASE_URL'
     } = options as PrismaEnvironmentOptions
 
     if (!Object.keys(supportedAdapters).includes(adapter)) {
@@ -78,8 +79,8 @@ export default <Environment>{
       dbSchema
     })
 
-    process.env.DATABASE_URL = connectionString
-    global.process.env.DATABASE_URL = connectionString
+    process.env[prismaEnvVarName] = connectionString
+    global.process.env[prismaEnvVarName] = connectionString
 
     const adapterOptions = {
       connectionString,
