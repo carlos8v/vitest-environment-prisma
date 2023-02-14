@@ -73,7 +73,8 @@ more information on how to properly set the connection URL from an environment v
 
 ### Sqlite config
 
-If you are using the sqlite adapter only the `DATABASE_NAME` env is required.
+If you are using the sqlite adapter only the `DATABASE_NAME` env is required. The database file will be written to the
+`/tmp` directory.
 
 Make sure to use only the name: 
 
