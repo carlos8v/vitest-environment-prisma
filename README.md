@@ -37,7 +37,7 @@ export default defineConfig({
     environmentOptions: {
       adapter: 'mysql',
       envFile: '.env.test',
-      prismaEnvVarName: 'DATABASE_URL'  // Overrides the environment variable used for the Prisma DB connection URL
+      prismaEnvVarName: 'DATABASE_URL'  // Optional
     }
   }
 })
@@ -79,6 +79,6 @@ If you are using the sqlite adapter only the `DATABASE_NAME` env is required. Th
 Make sure to use only the name: 
 
 - `DATABASE_NAME=mydb` :heavy_check_mark:
+- `DATABASE_NAME=mydb.db` :heavy_check_mark:
 - `DATABASE_NAME=file:/mydb` :heavy_multiplication_x:
-- `DATABASE_NAME=mydb.db` :heavy_multiplication_x:
 - `DATABASE_NAME=../mydb` :heavy_multiplication_x:
