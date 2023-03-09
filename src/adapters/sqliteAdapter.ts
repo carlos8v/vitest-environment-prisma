@@ -24,7 +24,7 @@ export async function teardownDatabase(adapterOptions: EnvironmentAdapterOptions
   const databaseFile = `${tmpdir()}/${databaseName.replace('.db', '')}_${databaseSchema}.db`
 
   await rmSync(databaseFile)
-  await rmSync(`${tmpdir()}/${databaseFile}-journal`).catch(() => console.log('Journal file not created'))
+  await rmSync(`${tmpdir()}/${databaseFile}-journal`).catch(() => {})
 }
 
 export default {
