@@ -1,7 +1,8 @@
 export type PrismaEnvironmentOptions = {
   envFile: string
   schemaPrefix: string
-  adapter: 'mysql' | 'psql'
+  adapter: 'mysql' | 'psql' | 'sqlite'
+  prismaEnvVarName: string
 }
 
 export type EnvironmentDatabaseCredentials = {
@@ -25,6 +26,11 @@ export type PsqlEnvironmentAdapterOptions = {
 
 export type MysqlEnvironmentAdapterOptions = {
   connectionString: string
+  databaseName: string
+  databaseSchema: string
+}
+
+export type SqliteEnvironmentAdapterOptions = {
   databaseName: string
   databaseSchema: string
 }

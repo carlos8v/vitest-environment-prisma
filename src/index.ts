@@ -7,10 +7,12 @@ import { PrismaEnvironmentOptions } from './@types'
 
 import mysqlAdapter from './adapters/mysqlAdapter'
 import psqlAdapter from './adapters/psqlAdapter'
+import sqliteAdapter from './adapters/sqliteAdapter'
 
 const supportedAdapters = {
   mysql: mysqlAdapter,
   psql: psqlAdapter,
+  sqlite: sqliteAdapter
 }
 
 export default <Environment>{
@@ -19,7 +21,8 @@ export default <Environment>{
     const {
       adapter = 'mysql',
       envFile = '.env.test',
-      schemaPrefix = ''
+      schemaPrefix = '',
+      prismaEnvVarName = 'DATABASE_URL'
     } = options as PrismaEnvironmentOptions
 
     if (!Object.keys(supportedAdapters).includes(adapter)) {
@@ -44,7 +47,10 @@ export default <Environment>{
       dbSchema = dbSchema.replace(/-/g, '_')
     }
 
-    if ([dbUser, dbPass, dbHost, dbPort, dbName].some((env) => !env || env === '')) {
+    if (
+      adapter !== 'sqlite' &&
+      [dbUser, dbPass, dbHost, dbPort, dbName].some((env) => !env || env === '')
+    ) {
       const missingCredentials = [
         '`DATABASE_USER`',
         '`DATABASE_PASS`',
@@ -54,6 +60,13 @@ export default <Environment>{
       ].filter((env) => !process.env[env] || process.env[env] === '')
 
       throw new Error(`${missingCredentials.join(', ')} credentials are missing.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#connection-string`)
+    }
+
+    if (
+      adapter === 'sqlite' && 
+      (!dbName || dbName === '')
+    ) {
+      throw new Error(`DATABASE_NAME credential is missing.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#connection-string`)
     }
 
     const { [adapter]: selectedAdapter } = supportedAdapters
@@ -66,8 +79,8 @@ export default <Environment>{
       dbSchema
     })
 
-    process.env.DATABASE_URL = connectionString
-    global.process.env.DATABASE_URL = connectionString
+    process.env[prismaEnvVarName] = connectionString
+    global.process.env[prismaEnvVarName] = connectionString
 
     const adapterOptions = {
       connectionString,
