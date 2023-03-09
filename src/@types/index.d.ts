@@ -2,6 +2,7 @@ export type PrismaEnvironmentOptions = {
   envFile: string
   schemaPrefix: string
   adapter: 'mysql' | 'psql' | 'sqlite'
+  prismaEnvVarName: string
 }
 
 export type EnvironmentDatabaseCredentials = {
