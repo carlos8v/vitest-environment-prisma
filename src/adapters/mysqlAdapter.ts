@@ -1,3 +1,4 @@
+import { resolve } from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 
@@ -7,7 +8,7 @@ import { EnvironmentAdapterOptions, EnvironmentDatabaseCredentials, MysqlEnviron
 
 const execSync = promisify(exec)
 
-const prismaBinary = './node_modules/.bin/prisma'
+const prismaBinary = resolve('./node_modules/.bin/prisma')
 
 export function getConnectionString(databaseCredentials: EnvironmentDatabaseCredentials) {
   const { dbUser, dbPass, dbHost, dbPort, dbName, dbSchema } = databaseCredentials

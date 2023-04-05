@@ -1,13 +1,16 @@
-import { promisify } from 'util'
+import { resolve } from 'path'
 import { exec } from 'child_process'
+import { promisify } from 'util'
+
 import { rm } from 'fs'
 import { tmpdir } from 'os';
+
 import { EnvironmentAdapterOptions, EnvironmentDatabaseCredentials, SqliteEnvironmentAdapterOptions } from '../@types'
 
 const execSync = promisify(exec)
 const rmSync = promisify(rm)
 
-const prismaBinary = './node_modules/.bin/prisma'
+const prismaBinary = resolve('./node_modules/.bin/prisma')
 
 export function getConnectionString(databaseCredentials: EnvironmentDatabaseCredentials) {
   const { dbName, dbSchema } = databaseCredentials
@@ -24,7 +27,7 @@ export async function teardownDatabase(adapterOptions: EnvironmentAdapterOptions
   const databaseFile = `${tmpdir()}/${databaseName.replace('.db', '')}_${databaseSchema}.db`
 
   await rmSync(databaseFile)
-  await rmSync(`${tmpdir()}/${databaseFile}-journal`).catch(() => {})
+  await rmSync(`${databaseFile}-journal`).catch(() => {})
 }
 
 export default {
