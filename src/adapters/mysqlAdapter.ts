@@ -15,23 +15,23 @@ export function getConnectionString(databaseCredentials: EnvironmentDatabaseCred
   return `mysql://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}_${dbSchema}`
 }
 
-export async function setupDatabase(adapterOptions: EnvironmentAdapterOptions) {
-  const { connectionString, databaseName, databaseSchema } = adapterOptions as MysqlEnvironmentAdapterOptions
-
-  const strippedConnectionString = connectionString.replace(`_${databaseSchema}`, '')
-
-  const client = await createConnection(strippedConnectionString)
-  await client.connect()
-  await client.query(`create database ${databaseName}_${databaseSchema}`)
-  client.destroy()
-
+export async function setupDatabase(_adapterOptions: EnvironmentAdapterOptions) {
   await execSync(`${prismaBinary} migrate deploy`)
 }
 
 export async function teardownDatabase(adapterOptions: EnvironmentAdapterOptions) {
-  const { connectionString, databaseName, databaseSchema } = adapterOptions as MysqlEnvironmentAdapterOptions
+  const {
+    connectionString,
+    databaseName,
+    databaseSchema,
+    schemaPrefix
+  } = adapterOptions as MysqlEnvironmentAdapterOptions
 
-  const client = await createConnection(connectionString)
+  const strippedConnectionString = connectionString
+    .replace(schemaPrefix, '')
+    .replace(`_${databaseSchema}`, '')
+
+  const client = await createConnection(strippedConnectionString)
   await client.connect()
   await client.query(`drop database ${databaseName}_${databaseSchema}`)
   client.destroy()

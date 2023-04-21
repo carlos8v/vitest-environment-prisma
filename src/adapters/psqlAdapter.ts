@@ -11,7 +11,9 @@ const execSync = promisify(exec)
 const prismaBinary = resolve('./node_modules/.bin/prisma')
 
 export function getConnectionString(databaseCredentials: EnvironmentDatabaseCredentials) {
-  const { dbUser, dbPass, dbHost, dbPort, dbName, dbSchema } = databaseCredentials
+  const { dbUser, dbPass, dbHost, dbPort, dbName, dbSchema, multiSchema } = databaseCredentials
+  if (multiSchema) return `postgresql://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}_${dbSchema}`
+
   return `postgresql://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}?schema=${dbSchema}`
 }
 
@@ -20,11 +22,25 @@ export async function setupDatabase(_adapterOptions: EnvironmentAdapterOptions) 
 }
 
 export async function teardownDatabase(adapterOptions: EnvironmentAdapterOptions) {
-  const { connectionString, databaseSchema } = adapterOptions as PsqlEnvironmentAdapterOptions
+  const {
+    multiSchema,
+    connectionString,
+    databaseName,
+    databaseSchema,
+    schemaPrefix
+  } = adapterOptions as PsqlEnvironmentAdapterOptions
 
-  const client = new Client({ connectionString })
+  const strippedConnectionString = connectionString
+    .replace(schemaPrefix, '')
+    .replace(`_${databaseSchema}`, '')
+
+  const connectionDatabaseName = multiSchema ? `${databaseName}_${databaseSchema}` : databaseName
+  const model = multiSchema ? 'DATABASE' : 'SCHEMA'
+  const options = multiSchema ? 'WITH (FORCE)' : 'CASCADE'
+
+  const client = new Client({ connectionString: strippedConnectionString })
   await client.connect()
-  await client.query(`DROP SCHEMA IF EXISTS "${databaseSchema}" CASCADE`)
+  await client.query(`DROP ${model} IF EXISTS "${connectionDatabaseName}" ${options}`)
   await client.end()
 }
 

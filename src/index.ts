@@ -21,6 +21,7 @@ export default <Environment>{
     const {
       adapter = 'mysql',
       envFile = '.env.test',
+      multiSchema = false,
       schemaPrefix = '',
       prismaEnvVarName = 'DATABASE_URL'
     } = options as PrismaEnvironmentOptions
@@ -66,7 +67,11 @@ export default <Environment>{
       adapter === 'sqlite' && 
       (!dbName || dbName === '')
     ) {
-      throw new Error(`DATABASE_NAME credential is missing.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#connection-string`)
+      throw new Error(`DATABASE_NAME credential is missing.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#environment-options`)
+    }
+
+    if (multiSchema && adapter !== 'psql') {
+      throw new Error(`multiSchema option is only supported in psql adapter.\n\nSee more in https://github.com/carlos8v/vitest-environment-prisma#environment-options`)
     }
 
     const { [adapter]: selectedAdapter } = supportedAdapters
@@ -76,16 +81,19 @@ export default <Environment>{
       dbHost,
       dbPort,
       dbName: `${schemaPrefix}${dbName}`,
-      dbSchema
+      dbSchema,
+      multiSchema,
     })
 
     process.env[prismaEnvVarName] = connectionString
     global.process.env[prismaEnvVarName] = connectionString
 
     const adapterOptions = {
+      multiSchema,
       connectionString,
-      databaseName: dbName,
-      databaseSchema: dbSchema
+      databaseName: `${schemaPrefix}${dbName}`,
+      databaseSchema: dbSchema,
+      schemaPrefix,
     }
 
     await selectedAdapter.setupDatabase(adapterOptions)

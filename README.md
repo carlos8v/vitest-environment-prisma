@@ -51,6 +51,7 @@ export default defineConfig({
 |:-----------------|:---------------------------------------------------------------|:---------------|
 | adapter          | Name database adapter. See [Adapters](#adapters)               | `mysql`        |
 | envFile          | Name of the `.env` file for test suit                          | `.env.test`    |
+| multiSchema      | Option to support multiple prisma schemas                      | `false`        |
 | schemaPrefix     | Prefix to attach on the database name                          |                |
 | prismaEnvVarName | The environment variable used for the Prisma DB connection URL | `DATABASE_URL` |
 

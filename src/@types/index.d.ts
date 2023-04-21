@@ -1,11 +1,13 @@
 export type PrismaEnvironmentOptions = {
   envFile: string
+  multiSchema: boolean
   schemaPrefix: string
   adapter: 'mysql' | 'psql' | 'sqlite'
   prismaEnvVarName: string
 }
 
 export type EnvironmentDatabaseCredentials = {
+  multiSchema: boolean
   dbUser: string
   dbPass: string
   dbHost: string
@@ -19,15 +21,18 @@ export type EnvironmentAdapterOptions = {
 }
 
 export type PsqlEnvironmentAdapterOptions = {
+  multiSchema: boolean
   connectionString: string
   databaseName: string
   databaseSchema: string
+  schemaPrefix: string
 }
 
 export type MysqlEnvironmentAdapterOptions = {
   connectionString: string
   databaseName: string
   databaseSchema: string
+  schemaPrefix: string
 }
 
 export type SqliteEnvironmentAdapterOptions = {
