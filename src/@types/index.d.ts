@@ -7,13 +7,14 @@ export type PrismaEnvironmentOptions = {
 }
 
 export type EnvironmentDatabaseCredentials = {
-  multiSchema: boolean
   dbUser: string
   dbPass: string
   dbHost: string
   dbPort: string
   dbName: string
   dbSchema: string
+  schemaPrefix?: string
+  multiSchema: boolean
 }
 
 export type EnvironmentAdapterOptions = {
@@ -38,4 +39,5 @@ export type MysqlEnvironmentAdapterOptions = {
 export type SqliteEnvironmentAdapterOptions = {
   databaseName: string
   databaseSchema: string
+  schemaPrefix: string
 }

@@ -13,8 +13,8 @@ const rmSync = promisify(rm)
 const prismaBinary = resolve('./node_modules/.bin/prisma')
 
 export function getConnectionString(databaseCredentials: EnvironmentDatabaseCredentials) {
-  const { dbName, dbSchema } = databaseCredentials
-  return `file:${tmpdir()}/${dbName.replace('.db', '')}_${dbSchema}.db`
+  const { dbName, dbSchema, schemaPrefix } = databaseCredentials
+  return `file:${tmpdir()}/${dbName.replace('.db', '')}_${schemaPrefix}${dbSchema}.db`
 }
 
 export async function setupDatabase(_adapterOptions: EnvironmentAdapterOptions) {
@@ -22,9 +22,9 @@ export async function setupDatabase(_adapterOptions: EnvironmentAdapterOptions) 
 }
 
 export async function teardownDatabase(adapterOptions: EnvironmentAdapterOptions) {
-  const { databaseSchema, databaseName } = adapterOptions as SqliteEnvironmentAdapterOptions
+  const { databaseSchema, databaseName, schemaPrefix } = adapterOptions as SqliteEnvironmentAdapterOptions
 
-  const databaseFile = `${tmpdir()}/${databaseName.replace('.db', '')}_${databaseSchema}.db`
+  const databaseFile = `${tmpdir()}/${databaseName.replace('.db', '')}_${schemaPrefix}${databaseSchema}.db`
 
   await rmSync(databaseFile)
   await rmSync(`${databaseFile}-journal`).catch(() => {})

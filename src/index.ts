@@ -80,8 +80,9 @@ export default <Environment>{
       dbPass,
       dbHost,
       dbPort,
-      dbName: `${schemaPrefix}${dbName}`,
+      dbName,
       dbSchema,
+      schemaPrefix,
       multiSchema,
     })
 
@@ -91,7 +92,7 @@ export default <Environment>{
     const adapterOptions = {
       multiSchema,
       connectionString,
-      databaseName: `${schemaPrefix}${dbName}`,
+      databaseName: dbName,
       databaseSchema: dbSchema,
       schemaPrefix,
     }

@@ -11,8 +11,8 @@ const execSync = promisify(exec)
 const prismaBinary = resolve('./node_modules/.bin/prisma')
 
 export function getConnectionString(databaseCredentials: EnvironmentDatabaseCredentials) {
-  const { dbUser, dbPass, dbHost, dbPort, dbName, dbSchema } = databaseCredentials
-  return `mysql://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}_${dbSchema}`
+  const { dbUser, dbPass, dbHost, dbPort, dbName, dbSchema, schemaPrefix } = databaseCredentials
+  return `mysql://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}_${schemaPrefix}${dbSchema}`
 }
 
 export async function setupDatabase(_adapterOptions: EnvironmentAdapterOptions) {
@@ -33,7 +33,7 @@ export async function teardownDatabase(adapterOptions: EnvironmentAdapterOptions
 
   const client = await createConnection(strippedConnectionString)
   await client.connect()
-  await client.query(`drop database ${databaseName}_${databaseSchema}`)
+  await client.query(`drop database ${databaseName}_${schemaPrefix}${databaseSchema}`)
   client.destroy()
 }
 
