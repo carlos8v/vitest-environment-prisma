@@ -17,7 +17,7 @@ const supportedAdapters = {
 
 export default <Environment>{
   name: 'prisma',
-  transformMode: "ssr",
+  transformMode: 'ssr',
   async setup(global, options = {}) {
     const {
       adapter = 'mysql',
@@ -25,7 +25,7 @@ export default <Environment>{
       multiSchema = false,
       schemaPrefix = '',
       prismaEnvVarName = 'DATABASE_URL',
-      transformMode
+      transformMode = 'ssr'
     } = options as PrismaEnvironmentOptions
     
     this.transformMode = transformMode;
