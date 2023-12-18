@@ -4,6 +4,7 @@ export type PrismaEnvironmentOptions = {
   schemaPrefix: string
   adapter: 'mysql' | 'psql' | 'sqlite'
   prismaEnvVarName: string
+  transformMode: 'ssr' | 'web'
 }
 
 export type EnvironmentDatabaseCredentials = {

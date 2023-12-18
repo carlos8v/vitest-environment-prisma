@@ -37,7 +37,8 @@ export default defineConfig({
     environmentOptions: {
       adapter: 'mysql',
       envFile: '.env.test',
-      prismaEnvVarName: 'DATABASE_URL'  // Optional
+      prismaEnvVarName: 'DATABASE_URL', // Optional
+      transformMode: 'ssr', // Optional
     }
   }
 })
@@ -54,6 +55,7 @@ export default defineConfig({
 | multiSchema      | Option to support multiple prisma schemas                      | `false`        |
 | schemaPrefix     | Prefix to attach on the database name                          |                |
 | prismaEnvVarName | The environment variable used for the Prisma DB connection URL | `DATABASE_URL` |
+| transformMode    | This value determines how plugins will transform source code   | `ssr`          |
 
 ## Database Credentials
 

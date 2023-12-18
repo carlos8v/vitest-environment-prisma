@@ -17,14 +17,18 @@ const supportedAdapters = {
 
 export default <Environment>{
   name: 'prisma',
+  transformMode: "ssr",
   async setup(global, options = {}) {
     const {
       adapter = 'mysql',
       envFile = '.env.test',
       multiSchema = false,
       schemaPrefix = '',
-      prismaEnvVarName = 'DATABASE_URL'
+      prismaEnvVarName = 'DATABASE_URL',
+      transformMode
     } = options as PrismaEnvironmentOptions
+    
+    this.transformMode = transformMode;
 
     if (!Object.keys(supportedAdapters).includes(adapter)) {
       throw new Error('Unsupported database adapter value.\n\nSee supported adapters in https://github.com/carlos8v/vitest-environment-prisma#adapters.')
